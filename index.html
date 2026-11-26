@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hội Quán Lông Thủ</title>
+<meta name="description" content="Hội Quán Lông Thủ by Nguyễn Minh Duy: bốc đội cầu lông cân trình độ và nam nữ, tính điểm cá nhân, chia tiền và phiếu thu kèm QR.">
+<meta name="theme-color" content="#1d6b52">
+<meta property="og:title" content="Hội Quán Lông Thủ">
+<meta property="og:description" content="Bốc đội, tính điểm, chia tiền cầu lông · by Nguyễn Minh Duy">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lông Thủ">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: app shell — sticky top bar, one panel per tab, bottom tab bar on phones. Court-green surfaces, line-white rules, shuttle-orange for actions. */
+:root{
+  --bg:#eef3f0; --surface:#ffffff; --surface2:#e3ebe6; --fg:#14231c; --muted:#5b6d64; --line:#cfdcd4;
+  --court:#1d6b52; --court-ink:#ffffff; --accent:#e8622c; --accent-ink:#ffffff;
+  --good:#1f8a4c; --bad:#c43d32; --warn:#b7791f;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1714; --surface:#17221d; --surface2:#1f2d27; --fg:#e4eee8; --muted:#93a69c; --line:#2c3d35;
+  --court:#2f8f6f; --court-ink:#ffffff; --accent:#f27a45; --accent-ink:#1a0d06;
+  --good:#4cc07c; --bad:#ef6b5f; --warn:#e0a84a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1714; --surface:#17221d; --surface2:#1f2d27; --fg:#e4eee8; --muted:#93a69c; --line:#2c3d35;
+  --court:#2f8f6f; --court-ink:#ffffff; --accent:#f27a45; --accent-ink:#1a0d06;
+  --good:#4cc07c; --bad:#ef6b5f; --warn:#e0a84a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45;padding-bottom:84px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--court)}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--court);color:var(--court-ink)}
+header.top .wrap{display:flex;align-items:center;gap:12px;padding-block:10px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-size:26px;letter-spacing:.02em;text-transform:uppercase;line-height:1}
+.brand small{display:block;font-family:var(--body);font-size:11px;letter-spacing:.08em;opacity:.8;text-transform:uppercase;margin-top:2px}
+.sync{margin-left:auto;white-space:nowrap;font-size:12px;opacity:.9;display:flex;align-items:center;gap:6px}
+.sync i{width:8px;height:8px;border-radius:50%;background:#ffd36b;display:inline-block}
+.sync.ok i{background:#7df0b0}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabs button{flex:1;background:none;border:0;padding:10px 2px 8px;color:var(--muted);font:600 12px var(--body);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+nav.tabs button[aria-current="page"]{color:var(--court)}
+nav.tabs button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h2{font-family:var(--display);font-size:30px;text-transform:uppercase;letter-spacing:.02em;margin:4px 0 4px;text-wrap:balance}
+h3{font-size:15px;margin:0 0 8px;font-weight:700}
+.lead{color:var(--muted);margin:0 0 14px;max-width:65ch}
+.panel{display:grid;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+label.f,div.f{display:grid;justify-items:start;gap:4px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+input,select{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 10px;min-width:0;width:100%}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--court)}
+.btn{font:600 14px var(--body);border-radius:8px;border:1px solid var(--line);background:var(--surface2);color:var(--fg);padding:9px 14px;cursor:pointer;white-space:nowrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.court{background:var(--court);border-color:var(--court);color:var(--court-ink)}
+.btn.ghost{background:none}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn.danger{color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:8px 12px;font:600 13px var(--body);color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--court);color:var(--court-ink)}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.pill{display:inline-block;white-space:nowrap;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--surface2);color:var(--muted);letter-spacing:.02em}
+.pill.good{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.pill.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.lv{font-family:var(--display);font-size:15px;letter-spacing:.04em;color:var(--court)}
+/* players */
+.plist{display:grid;gap:0}
+.prow{display:grid;grid-template-columns:auto 1fr auto auto auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.prow:last-child{border-bottom:0}
+.prow .name{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.prow select{width:auto;padding:5px 6px}
+/* court */
+.courts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.court{background:var(--court);color:var(--court-ink);border-radius:10px;padding:12px;position:relative;overflow:hidden}
+.court::before{content:"";position:absolute;inset:8px;border:2px solid rgba(255,255,255,.45);border-radius:4px;pointer-events:none}
+.court .cname{position:relative;font-family:var(--display);font-size:18px;letter-spacing:.06em;text-transform:uppercase;text-align:center;margin:4px 0 8px}
+.court .sides::after{content:"";position:absolute;left:50%;top:-4px;bottom:0;border-left:2px dashed rgba(255,255,255,.55)}
+.court .sides{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:4px 12px 8px}
+.court .side{display:grid;gap:4px;text-align:center;min-width:0}
+.court .side b{font-weight:600;overflow-wrap:anywhere}
+.court .side .sum{font-size:11px;opacity:.8}
+.court .score{position:relative;display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:6px 12px 6px}
+.court .score input{text-align:center;background:rgba(255,255,255,.95);color:#14231c;border:0;font-weight:700;font-size:18px;padding:6px}
+.court .score span{font-family:var(--display);font-size:20px}
+.court .act{position:relative;display:flex;justify-content:center;gap:8px;padding:4px 12px 6px}
+.court .act .btn{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.4);color:#fff}
+.court .act .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.bench{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:5px 10px;font-size:13px;cursor:pointer;user-select:none}
+.chip[aria-pressed="true"]{background:var(--court);border-color:var(--court);color:var(--court-ink)}
+.chip .lv{color:inherit;opacity:.85}
+/* tables */
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+td.r,th.r{text-align:right}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.stat{background:var(--surface2);border-radius:8px;padding:10px 12px}
+.stat .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.stat .v{font-family:var(--display);font-size:28px;line-height:1.1}
+.empty{border:1.5px dashed var(--line);border-radius:10px;padding:18px;text-align:center;color:var(--muted)}
+.list-entry{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);align-items:center}
+.list-entry:last-child{border-bottom:0}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:8px;font-weight:600;font-size:14px;z-index:20;max-width:90vw}
+.confirm{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+textarea{font:13px/1.5 ui-monospace,Menlo,monospace;width:100%;min-height:150px;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--surface2);color:var(--fg)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (min-width:900px){nav.tabs{top:auto}}
+tr.win td{background:color-mix(in srgb,var(--good) 10%,transparent)}
+tr.lose td{background:color-mix(in srgb,var(--bad) 9%,transparent)}
+.medal{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--surface2);font:700 13px var(--display)}
+tr.win .medal{background:var(--good);color:#fff}
+tr.lose .medal{background:var(--bad);color:#fff}
+.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.step button{border:0;background:var(--surface2);width:34px;height:36px;font:700 18px var(--body);color:var(--fg);cursor:pointer}
+.step output{min-width:36px;text-align:center;font:700 16px var(--body)}
+.gx{font-size:11px;font-weight:700;padding:1px 6px;border-radius:99px;background:var(--surface2);color:var(--muted)}
+.gx.nu{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent)}
+.court .gx{background:rgba(255,255,255,.2);color:#fff}
+.court .warn{position:relative;text-align:center;font-size:12px;background:rgba(0,0,0,.25);border-radius:6px;margin:0 12px 6px;padding:4px 8px}
+.court .warn.tired{background:rgba(232,98,44,.55)}
+.court.free{display:grid;place-items:center;gap:8px;min-height:180px;text-align:center}
+.court.free p{position:relative;margin:0;opacity:.9}
+.court.free .act{flex-wrap:wrap}
+.chip .rest{font-size:11px;font-weight:700;opacity:.85}
+.sheet{position:fixed;inset:0;z-index:30;background:rgba(10,20,15,.55);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet .box{background:var(--surface);color:var(--fg);border-radius:12px;max-width:420px;width:100%;padding:14px;display:grid;gap:10px}
+.sheet img{width:100%;border-radius:8px;border:1px solid var(--line);background:#fff}
+.kv{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;font-size:14px}
+.kv b{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sig{text-align:center;color:var(--muted);font-size:12.5px;letter-spacing:.02em;padding-block:8px 24px}
+.sig b{font-family:var(--display);font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--court)}
+.note{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--fg);border-radius:8px;padding:8px 10px;font-size:13px}
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="brand">Hội Quán Lông Thủ<small>by Nguyễn Minh Duy</small></div>
+  <div class="sync" id="sync"><i></i><span>Đang kết nối…</span></div>
+</div></header>
+
+<main class="wrap" id="app"></main>
+<footer class="wrap sig">Hội Quán Lông Thủ · một sản phẩm của <b>Nguyễn Minh Duy</b></footer>
+
+<nav class="tabs" id="tabs" aria-label="Mục">
+  <button data-tab="ghep"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M12 5v14M3 12h18"/></svg>Ghép cặp</button>
+  <button data-tab="diem"><svg viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 20h8"/></svg>Bảng điểm</button>
+  <button data-tab="tien"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="1.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/></svg>Chia tiền</button>
+  <button data-tab="nguoi"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.4 3-5 6-5s5.4 1.6 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14c2.6.2 4.4 1.7 5 4.5"/></svg>Thành viên</button>
+  <button data-tab="bxh"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V5M19 20v-6"/></svg>Lịch sử</button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+(function(){
+"use strict";
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const money=n=>(Math.round(+n||0)).toLocaleString("vi-VN")+"đ";
+const fmtDate=s=>{if(!s)return"";const [y,m,d]=s.split("-");return d+"/"+m+"/"+y};
+const num=v=>{const n=parseFloat(String(v).replace(/[^\d.-]/g,""));return isFinite(n)?n:0};
+const ceil1k=n=>Math.ceil(n/1000)*1000;
+const IN_CLAUDE=!!(window.claude&&window.claude.use);
+function plainDownload(filename,data,type){try{const blob=data instanceof Blob?data:new Blob([data],{type:type||"application/octet-stream"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);return true}catch(e){return false}}
+let toastT;function toast(msg){let t=$(".toast");if(!t){t=document.createElement("div");t.className="toast";t.setAttribute("role","status");document.body.appendChild(t)}t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200)}
+
+/* ---------- store: shared db when available, else this browser ---------- */
+const COLS=["players","matches","sessions"];
+const ITEMS=[["court","Tiền sân"],["shuttle","Tiền cầu"],["drink","Tiền nước"],["other","Chi khác"]];
+const DEFAULT_CFG={genderBalance:true,courts:2,winPts:3,losePts:0,topN:1,bottomM:1,exempt:{court:true,shuttle:false,drink:true,other:false},courtFee:200000,shuttlePrice:25000,bank:{bin:"970418",acct:"6800981962",holder:"NGUYEN MINH DUY"}};
+const S={players:{},matches:{},sessions:{},cfg:null};
+let db=null,mode="local",canWrite=true;
+const LS="caulong.v2";
+function loadLocal(){try{const raw=localStorage.getItem(LS);if(raw){const o=JSON.parse(raw);COLS.forEach(c=>S[c]=o[c]||{});S.cfg=o.cfg||null}}catch(e){}}
+function saveLocal(){if(mode!=="local")return;try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+function cfg(){const c=Object.assign({},DEFAULT_CFG,S.cfg||{});c.exempt=Object.assign({},DEFAULT_CFG.exempt,c.exempt||{});return c}
+function fail(e){console.error(e);if(e&&e.code==="invalid_argument"){canWrite=false;toast("Bạn chỉ có quyền xem, không lưu được");render()}else toast("Không lưu được, thử lại sau")}
+function put(col,id,data){S[col][id]=data;render();if(db)db.collection(col).doc(id).set(data).catch(fail);else saveLocal()}
+function del(col,id){delete S[col][id];render();if(db)db.collection(col).doc(id).delete().catch(fail);else saveLocal()}
+function upd(col,id,patch){const cur=S[col][id];if(!cur)return;put(col,id,Object.assign({},cur,patch))}
+function putCfg(patch){S.cfg=Object.assign({},cfg(),patch);render();if(db)db.doc("config/main").set(S.cfg).catch(fail);else saveLocal()}
+function setSync(ok,text){const el=$("#sync");el.className="sync"+(ok?" ok":"");el.lastElementChild.textContent=text}
+async function initStore(){
+  let d=null;
+  try{d=window.claude&&window.claude.use?await window.claude.use("db"):null}catch(e){d=null}
+  if(!d){mode="local";loadLocal();setSync(false,"Lưu trên máy này");render();return}
+  db=d;mode="db";setSync(false,"Đang tải…");
+  const pending=new Set(COLS.concat("cfg"));
+  const timer=setTimeout(()=>{if(pending.size)setSync(false,"Chưa tải được dữ liệu chung")},10000);
+  const done=k=>{pending.delete(k);if(!pending.size){clearTimeout(timer);setSync(true,"Đồng bộ cả nhóm")}};
+  COLS.forEach(c=>{db.collection(c).onSnapshot(snap=>{const o={};snap.docs.forEach(doc=>{o[doc.id]=doc.data()});S[c]=o;if(!snap.metadata.fromCache)done(c);render()},err=>{console.error(err);done(c);setSync(false,"Lỗi đồng bộ")})});
+  db.doc("config/main").onSnapshot(snap=>{S.cfg=snap.exists?snap.data():null;if(!snap.metadata.fromCache)done("cfg");render()},()=>done("cfg"));
+  try{const u=await window.claude.use("user");if(u){const w=await u.can("data.write");if(w===false){canWrite=false;render()}}}catch(e){}
+}
+
+/* ---------- derived ---------- */
+const players=()=>Object.entries(S.players).map(([id,p])=>Object.assign({id},p)).sort((a,b)=>a.name.localeCompare(b.name,"vi"));
+const pname=id=>(S.players[id]&&S.players[id].name)||"(đã xoá)";
+const plevel=id=>(S.players[id]&&+S.players[id].level)||3;
+const isNu=id=>!!(S.players[id]&&S.players[id].g==="nu");
+const gTag=id=>isNu(id)?'<span class="gx nu">Nữ</span>':'<span class="gx">Nam</span>';
+const matchesList=()=>Object.entries(S.matches).map(([id,m])=>Object.assign({id},m)).sort((a,b)=>(b.at||0)-(a.at||0));
+const matchesOn=date=>matchesList().filter(m=>m.date===date);
+function gamesOn(id,date){return matchesOn(date).filter(m=>m.a.concat(m.b).includes(id)).length}
+function partnerCount(x,y,date){let n=0;matchesOn(date).forEach(m=>[m.a,m.b].forEach(t=>{if(t.includes(x)&&t.includes(y))n++}));return n}
+/* "just played": no other match has started since this person's last match ended, so they have not rested a turn yet */
+function lastEnd(id,date){let t=0;matchesOn(date).forEach(m=>{if(m.a.concat(m.b).includes(id))t=Math.max(t,m.at||0)});return t}
+function justPlayed(id,date){
+  const end=lastEnd(id,date);if(!end)return false;
+  const without=m=>!m.a.concat(m.b).includes(id);
+  if(matchesOn(date).some(m=>(m.startAt||m.at)>end&&without(m)))return false;
+  if(ui.draft&&ui.draft.courts.some(m=>!m.free&&m.startAt>end&&without(m)))return false;
+  return true;
+}
+const sessionsList=()=>Object.entries(S.sessions).map(([id,s])=>Object.assign({id},s)).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.at||0)-(a.at||0));
+const sessionOn=date=>sessionsList().find(s=>s.date===date);
+/* rules for a date: the session's own settings if a session exists, else group defaults */
+function rulesFor(date){const c=cfg();const s=sessionOn(date);const r={winPts:c.winPts,losePts:c.losePts,topN:c.topN,bottomM:c.bottomM,exempt:c.exempt};if(s){["topN","bottomM"].forEach(k=>{if(s[k]!=null)r[k]=+s[k]});if(s.exempt)r.exempt=Object.assign({},c.exempt,s.exempt)}return r}
+/* individual standings for one day: points, then point difference, then fewer games */
+function standings(date,onlyIds){
+  const r=rulesFor(date);const st={};
+  const ensure=id=>st[id]||(st[id]={id,w:0,l:0,pf:0,pa:0});
+  (onlyIds||[]).forEach(ensure);
+  matchesOn(date).forEach(m=>{const aw=+m.sa>+m.sb;
+    m.a.forEach(id=>{if(onlyIds&&!onlyIds.includes(id))return;const x=ensure(id);x.pf+=+m.sa;x.pa+=+m.sb;aw?x.w++:x.l++});
+    m.b.forEach(id=>{if(onlyIds&&!onlyIds.includes(id))return;const x=ensure(id);x.pf+=+m.sb;x.pa+=+m.sa;aw?x.l++:x.w++})});
+  const rows=Object.values(st).map(x=>Object.assign(x,{g:x.w+x.l,pts:x.w*r.winPts+x.l*r.losePts,diff:x.pf-x.pa}));
+  rows.sort((a,b)=>b.pts-a.pts||b.diff-a.diff||a.g-b.g||pname(a.id).localeCompare(pname(b.id),"vi"));
+  const n=rows.length;const topN=Math.min(r.topN,n);const bottomM=Math.min(r.bottomM,Math.max(0,n-topN));
+  rows.forEach((x,i)=>{x.rank=i+1;x.role=i<topN?"win":(i>=n-bottomM?"lose":"")});
+  const same=(a,b)=>a&&b&&a.pts===b.pts&&a.diff===b.diff;
+  const tieTop=topN>0&&topN<n&&same(rows[topN-1],rows[topN]);
+  const tieBot=bottomM>0&&n-bottomM-1>=0&&same(rows[n-bottomM],rows[n-bottomM-1]);
+  return {rows,rules:r,tie:tieTop||tieBot,played:matchesOn(date).length};
+}
+
+/* ---------- pairing: random teams, balanced by level ---------- */
+let ui={tab:"ghep",pmode:"trinhdo",fmt:"doi",draft:null,confirm:null,sessionId:null,day:null};
+try{const t=localStorage.getItem(LS+".tab");if(t)ui.tab=t}catch(e){}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const REST=1200,EXTRA_GAME=300;
+function pairCourts(pool,nCourts){
+  const c=cfg();const t=today();const per=ui.fmt==="doi"?4:2;
+  const courts=Math.min(nCourts,Math.floor(pool.length/per));if(courts<1)return null;
+  const need=courts*per;
+  const pri={},tired={};pool.forEach(id=>{tired[id]=justPlayed(id,t);pri[id]=(tired[id]?REST:0)+gamesOn(id,t)*EXTRA_GAME});
+  const pc={};matchesOn(t).forEach(m=>[m.a,m.b].forEach(tm=>{if(tm.length===2){const k=tm.slice().sort().join("|");pc[k]=(pc[k]||0)+1}}));
+  const partners=(x,y)=>pc[[x,y].sort().join("|")]||0;
+  const byLevel=ui.pmode==="trinhdo";const byGender=!!c.genderBalance;const GENDER=c.priority==="gender"?2500:1000;
+  let best=null,bestScore=Infinity;
+  for(let k=0;k<1500;k++){
+    /* rested people and those with fewer games go first; sometimes try a swap with someone waiting */
+    let playing=shuffle(pool).sort((x,y)=>pri[x]-pri[y]).slice(0,need);
+    if(k%2===1&&pool.length>need){const wait=pool.filter(id=>!playing.includes(id));const o=playing[Math.floor(Math.random()*need)],n=wait[Math.floor(Math.random()*wait.length)];playing=playing.map(id=>id===o?n:id)}
+    let score=playing.reduce((a,id)=>a+pri[id],0);
+    const ids=shuffle(playing);const out=[];
+    for(let i=0;i<courts;i++){
+      const g=ids.slice(i*per,i*per+per);const A=g.slice(0,per/2),B=g.slice(per/2);
+      const sa=A.reduce((x,id)=>x+plevel(id),0),sb=B.reduce((x,id)=>x+plevel(id),0);
+      const fa=A.filter(isNu).length,fb=B.filter(isNu).length;
+      if(byGender)score+=Math.abs(fa-fb)*GENDER;
+      if(byLevel)score+=Math.abs(sa-sb)*10;
+      if(per===4)score+=(partners(A[0],A[1])+partners(B[0],B[1]))*4;
+      out.push({a:A,b:B,sa:"",sb:"",warn:byGender&&fa!==fb,tired:g.filter(id=>tired[id])});
+    }
+    score+=Math.random()*3; /* keep it random among equally fair options */
+    if(score<bestScore){bestScore=score;best=out}
+  }
+  const now=Date.now();best.forEach(m=>m.startAt=now);
+  return best;
+}
+const hereIds=()=>players().filter(p=>p.here).map(p=>p.id);
+const onCourt=(skip)=>new Set((ui.draft?ui.draft.courts:[]).filter((m,i)=>!m.free&&i!==skip).flatMap(m=>m.a.concat(m.b)));
+function pairAll(){const per=ui.fmt==="doi"?4:2;const pool=hereIds();const res=pairCourts(pool,Math.max(1,+cfg().courts||1));
+  ui.draft=res?{courts:res}:{courts:[],err:"Cần ít nhất "+per+" người đã điểm danh."}}
+function pairOne(i){const busy=onCourt(i);const pool=hereIds().filter(id=>!busy.has(id));const res=pairCourts(pool,1);
+  if(!res){toast("Không đủ người đang chờ để bốc trận cho sân này");return}ui.draft.courts[i]=res[0]}
+
+/* ---------- money: winners skip chosen items, losers cover them ---------- */
+function sessionCalc(s){
+  const items={court:num(s.courtFee),shuttle:num(s.shuttles)*num(s.shuttlePrice),drink:num(s.drink),other:num(s.other)};
+  const total=items.court+items.shuttle+items.drink+items.other;
+  const att=(s.att||[]).filter(id=>S.players[id]);const n=att.length;
+  const sd=standings(s.date,att);const r=sd.rules;
+  const base=n?total/n:0;
+  const exemptTotal=ITEMS.reduce((a,[k])=>a+(r.exempt[k]?items[k]:0),0);
+  const exemptEach=n?exemptTotal/n:0;
+  const winners=sd.played?sd.rows.filter(x=>x.role==="win").map(x=>x.id):[];
+  const losers=sd.played?sd.rows.filter(x=>x.role==="lose").map(x=>x.id):[];
+  const extra=losers.length?exemptEach*winners.length/losers.length:0;
+  const pay={};att.forEach(id=>{let v=base;if(winners.includes(id))v-=exemptEach;if(losers.includes(id))v+=extra;pay[id]=ceil1k(Math.max(0,v))});
+  if(!losers.length)winners.forEach(id=>pay[id]=ceil1k(base)); /* nobody to cover: no exemption */
+  const collected=Object.values(pay).reduce((a,b)=>a+b,0);
+  return {items,total,n,base,exemptEach,extra,winners,losers,pay,collected,sd};
+}
+
+/* ---------- render ---------- */
+function render(){
+  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===ui.tab?"page":"false"));
+  const fn={ghep:rGhep,diem:rDiem,tien:rTien,nguoi:rNguoi,bxh:rBxh}[ui.tab]||rGhep;
+  const a=document.activeElement;const focusId=a&&a.id;let selS,selE;
+  if(focusId){try{selS=a.selectionStart;selE=a.selectionEnd}catch(e){}}
+  $("#app").innerHTML=fn()+(ui.tab==="tien"&&ui.receipt?rReceipt():"");
+  if(ui.tab==="tien"&&ui.receipt)drawReceipt();
+  if(focusId){const el=document.getElementById(focusId);if(el){el.focus();try{if(selS!=null)el.setSelectionRange(selS,selE)}catch(e){}}}
+}
+const ro=()=>canWrite?"":" disabled";
+function emptyPlayers(){return `<div class="empty"><p>Chưa có thành viên nào. Thêm người chơi ở mục <b>Thành viên</b> để bắt đầu.</p><div class="row" style="justify-content:center"><button class="btn court" data-act="goto" data-tab="nguoi">Thêm thành viên</button><button class="btn" data-act="sample"${ro()}>Dùng thử 10 người mẫu</button></div></div>`}
+function confirmBtn(act,id,label){
+  if(!canWrite)return"";
+  if(ui.confirm===act+":"+id)return `<span class="confirm"><span class="small muted">Chắc chắn?</span><button class="btn sm danger" data-act="${act}" data-id="${id}">Xoá</button><button class="btn sm ghost" data-act="cancelc">Thôi</button></span>`;
+  return `<button class="btn sm ghost" data-act="ask" data-c="${act}:${id}">${label}</button>`;
+}
+function stepper(id,val,min,max){return `<span class="step"><button type="button" data-act="step" data-k="${id}" data-d="-1" aria-label="Giảm"${ro()}>−</button><output class="num" id="${id}">${val}</output><button type="button" data-act="step" data-k="${id}" data-d="1" aria-label="Tăng"${ro()}>+</button></span>`}
+
+function rGhep(){
+  const ps=players();const c=cfg();const t=today();
+  const head=`<div><h2>Ghép cặp thi đấu</h2><p class="lead">Mỗi trận đồng đội được bốc ngẫu nhiên nhưng cân theo trình độ, để tổng trình độ hai bên gần bằng nhau${c.genderBalance?", và hai bên luôn có số nữ bằng nhau (nam đôi gặp nam đôi, đôi nam nữ gặp đôi nam nữ)":""}. Người vừa đánh xong được nghỉ ít nhất một trận, người đánh ít trận nhất hôm nay được ra sân trước. Sân nào đánh xong thì bốc trận mới cho riêng sân đó. Mỗi trận thắng được ${c.winPts} điểm, thua được ${c.losePts} điểm.</p></div>`;
+  if(!ps.length)return `<section class="panel">${head}${emptyPlayers()}</section>`;
+  const here=ps.filter(p=>p.here).length;
+  let html=`<section class="panel">${head}
+  <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Có mặt hôm nay <span class="pill num">${here}/${ps.length}</span></h3>
+  <div class="row"><button class="btn sm ghost" data-act="allhere"${ro()}>Chọn tất cả</button><button class="btn sm ghost" data-act="nohere"${ro()}>Bỏ chọn</button></div></div>
+  <div class="bench" style="margin-top:10px">${ps.map(p=>`<span class="chip" role="button" tabindex="0" aria-pressed="${!!p.here}" data-act="here" data-id="${p.id}">${esc(p.name)} <span class="lv">${p.g==="nu"?"Nữ ":""}T${+p.level||3}</span> <span class="small" style="opacity:.75">${gamesOn(p.id,t)} trận</span></span>`).join("")}</div></div>
+  <div class="card row" style="gap:14px">
+    <div class="seg" role="group" aria-label="Kiểu trận"><button data-act="fmt" data-v="doi" aria-pressed="${ui.fmt==="doi"}">Đánh đôi</button><button data-act="fmt" data-v="don" aria-pressed="${ui.fmt==="don"}">Đánh đơn</button></div>
+    <div class="seg" role="group" aria-label="Cách ghép"><button data-act="pmode" data-v="trinhdo" aria-pressed="${ui.pmode==="trinhdo"}">Ngẫu nhiên theo trình độ</button><button data-act="pmode" data-v="ngaunhien" aria-pressed="${ui.pmode==="ngaunhien"}">Hoàn toàn ngẫu nhiên</button></div>
+    <label class="row small" style="gap:8px;font-weight:600"><input type="checkbox" id="genderBalance" ${c.genderBalance?"checked":""}${ro()}> Cân nam nữ</label>
+    <label class="f" style="width:auto">Khi thiếu người<select id="priority" style="width:auto"${ro()}><option value="rest" ${c.priority!=="gender"?"selected":""}>Ưu tiên cho nghỉ</option><option value="gender" ${c.priority==="gender"?"selected":""}>Ưu tiên cân nam nữ</option></select></label>
+    <label class="f" style="width:90px">Số sân<input id="courts" type="number" min="1" max="10" inputmode="numeric" value="${+c.courts||1}"${ro()}></label>
+    <button class="btn primary" data-act="pair" style="margin-left:auto">${ui.draft&&ui.draft.courts.some(m=>!m.free)?"Bốc lại tất cả sân":"Bốc đội"}</button>
+  </div>`;
+  const d=ui.draft;
+  if(d){
+    if(d.err)html+=`<div class="empty">${esc(d.err)}</div>`;
+    html+=`<div class="courts">${d.courts.map((m,i)=>{
+      if(m.free)return `<div class="court free"><div class="cname">Sân ${i+1}</div><p class="small">Sân trống. Người vừa đánh xong sẽ được nghỉ lượt này.</p><div class="act"><button class="btn sm primary" data-act="pickone" data-i="${i}">Bốc trận tiếp cho sân ${i+1}</button><button class="btn sm" data-act="rmcourt" data-i="${i}">Bỏ sân</button></div></div>`;
+      const sa=m.a.reduce((x,id)=>x+plevel(id),0),sb=m.b.reduce((x,id)=>x+plevel(id),0);
+      return `<div class="court"><div class="cname">Sân ${i+1}</div>
+      <div class="sides"><div class="side">${m.a.map(id=>`<b>${esc(pname(id))} ${gTag(id)}</b>`).join("")}<span class="sum">Tổng trình độ ${sa}</span></div><div class="side">${m.b.map(id=>`<b>${esc(pname(id))} ${gTag(id)}</b>`).join("")}<span class="sum">Tổng trình độ ${sb}</span></div></div>
+      ${m.warn?`<div class="warn">Không đủ nữ để cân sân này. Thử điểm danh thêm hoặc giảm số sân.</div>`:""}
+      ${m.tired&&m.tired.length?`<div class="warn tired">${m.tired.map(id=>esc(pname(id))).join(", ")} vừa đánh xong mà phải đánh tiếp vì không đủ người nghỉ.</div>`:""}
+      <div class="score"><input id="sa${i}" data-i="${i}" data-s="sa" type="number" inputmode="numeric" placeholder="0" value="${esc(m.sa)}" aria-label="Điểm bên trái sân ${i+1}"><span>:</span><input id="sb${i}" data-i="${i}" data-s="sb" type="number" inputmode="numeric" placeholder="0" value="${esc(m.sb)}" aria-label="Điểm bên phải sân ${i+1}"></div>
+      <div class="act"><button class="btn sm primary" data-act="savematch" data-i="${i}"${ro()}>Lưu kết quả</button><button class="btn sm" data-act="dropmatch" data-i="${i}">Huỷ trận</button></div></div>`}).join("")}</div>`;
+    const busy=onCourt(-1);const wait=hereIds().filter(id=>!busy.has(id)).sort((x,y)=>(justPlayed(x,t)-justPlayed(y,t))||(gamesOn(x,t)-gamesOn(y,t)));
+    if(wait.length)html+=`<div class="card"><h3>Đang chờ</h3><div class="bench">${wait.map(id=>`<span class="chip" aria-pressed="false">${esc(pname(id))} <span class="small" style="opacity:.75">${gamesOn(id,t)} trận</span>${justPlayed(id,t)?' <span class="rest">· vừa đánh, nghỉ lượt</span>':""}</span>`).join("")}</div></div>`;
+  }
+  const ms=matchesOn(t);
+  html+=`<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Trận hôm nay <span class="pill num">${ms.length}</span></h3>${ms.length?`<button class="btn sm court" data-act="goto" data-tab="diem">Xem bảng điểm</button>`:""}</div>${ms.length?ms.map(matchLine).join(""):`<p class="muted small" style="margin:8px 0 0">Chưa có trận nào được lưu hôm nay.</p>`}</div></section>`;
+  return html;
+}
+function matchLine(m){
+  const aw=+m.sa>+m.sb;
+  return `<div class="list-entry"><div class="small"><span${aw?' style="font-weight:700"':""}>${m.a.map(id=>esc(pname(id))).join(" & ")}</span> <span class="num" style="font-weight:700">${+m.sa} – ${+m.sb}</span> <span${!aw?' style="font-weight:700"':""}>${m.b.map(id=>esc(pname(id))).join(" & ")}</span> <span class="muted">· ${fmtDate(m.date)}</span></div>${confirmBtn("delmatch",m.id,"Xoá")}</div>`;
+}
+
+function dayOptions(){const days=[...new Set([today()].concat(matchesList().map(m=>m.date)).concat(sessionsList().map(s=>s.date)))].sort().reverse();return days}
+function rDiem(){
+  const c=cfg();const days=dayOptions();if(!ui.day||!days.includes(ui.day))ui.day=today();
+  const sd=standings(ui.day);const r=sd.rules;const s=sessionOn(ui.day);
+  const exemptNames=ITEMS.filter(([k])=>r.exempt[k]).map(([,n])=>n.toLowerCase()).join(", ")||"không khoản nào";
+  let html=`<section class="panel"><div><h2>Bảng điểm cá nhân</h2><p class="lead">Điểm cộng dồn theo từng trận trong buổi. Bằng điểm thì xét hiệu số, rồi đến người đánh ít trận hơn. Top ${r.topN} được miễn ${exemptNames}. ${r.bottomM} người thấp nhất trả phần được miễn đó.</p></div>
+  <div class="card row" style="gap:16px">
+    <label class="f" style="width:auto">Buổi<select id="day" style="width:auto">${days.map(d=>`<option value="${d}" ${d===ui.day?"selected":""}>${fmtDate(d)}${d===today()?" (hôm nay)":""}</option>`).join("")}</select></label>
+    <div class="f"><span>Số người thắng (được miễn)</span>${stepper("topN",r.topN)}</div>
+    <div class="f"><span>Số người thua (chịu tiền)</span>${stepper("bottomM",r.bottomM)}</div>
+  </div>`;
+  if(!sd.rows.length)return html+`<div class="empty">Buổi này chưa có trận nào. Lưu kết quả ở mục Ghép cặp, bảng điểm sẽ tự cập nhật.</div></section>`;
+  if(sd.tie)html+=`<div class="note">Có người bằng cả điểm lẫn hiệu số ở ranh giới thắng/thua. Nên đánh thêm một trận phân định, hoặc đổi số người thắng/thua.</div>`;
+  html+=`<div class="card"><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Tên</th><th class="r">Trận</th><th class="r">Thắng</th><th class="r">Thua</th><th class="r">Hiệu số</th><th class="r">Điểm</th><th></th></tr></thead><tbody>
+  ${sd.rows.map(x=>`<tr class="${x.role}"><td><span class="medal num">${x.rank}</span></td><td>${esc(pname(x.id))}</td><td class="r num">${x.g}</td><td class="r num">${x.w}</td><td class="r num">${x.l}</td><td class="r num">${x.diff>0?"+":""}${x.diff}</td><td class="r num" style="font-weight:700;font-size:16px">${x.pts}</td><td>${x.role==="win"?'<span class="pill good">Được miễn</span>':x.role==="lose"?'<span class="pill bad">Chịu tiền</span>':""}</td></tr>`).join("")}
+  </tbody></table></div></div>
+  <div class="card row" style="gap:14px"><h3 style="margin:0;flex-basis:100%">Cách tính điểm (cả nhóm)</h3>
+    <label class="f" style="width:120px">Điểm mỗi trận thắng<input id="winPts" type="number" min="0" inputmode="numeric" value="${c.winPts}"${ro()}></label>
+    <label class="f" style="width:120px">Điểm mỗi trận thua<input id="losePts" type="number" min="0" inputmode="numeric" value="${c.losePts}"${ro()}></label>
+    ${s?`<button class="btn court" data-act="gotosess" data-id="${s.id}" style="margin-left:auto">Xem chia tiền buổi này</button>`:`<button class="btn court" data-act="newsess" data-date="${ui.day}" style="margin-left:auto"${ro()}>Tạo buổi chia tiền</button>`}
+  </div></section>`;
+  return html;
+}
+
+function rTien(){
+  const c=cfg();const ps=players();const list=sessionsList();
+  if(!ui.sessionId||!S.sessions[ui.sessionId])ui.sessionId=list[0]&&list[0].id;
+  const s=ui.sessionId&&Object.assign({id:ui.sessionId},S.sessions[ui.sessionId]);
+  let html=`<section class="panel"><div><h2>Chia tiền buổi chơi</h2><p class="lead">Tổng chi chia đều cho người đến chơi. Người thắng được miễn các khoản đã chọn. Phần được miễn đó chia cho người thua. Mọi khoản làm tròn lên hàng nghìn.</p></div>
+  <div class="row"><button class="btn primary" data-act="newsess" data-date="${today()}"${ps.length&&canWrite?"":" disabled"}>Tạo buổi hôm nay</button>
+  ${list.length?`<select id="pick" style="width:auto">${list.map(x=>`<option value="${x.id}" ${x.id===ui.sessionId?"selected":""}>Buổi ${fmtDate(x.date)} · ${(x.att||[]).length} người</option>`).join("")}</select>`:""}</div>`;
+  if(!ps.length)return html+emptyPlayers()+`</section>`;
+  if(!s)return html+`<div class="empty">Chưa có buổi nào. Bấm "Tạo buổi hôm nay", người đã điểm danh sẽ được chọn sẵn.</div></section>`;
+  const k=sessionCalc(s);const r=k.sd.rules;
+  html+=`<div class="grid2"><div class="card"><h3>Chi phí buổi ${fmtDate(s.date)}</h3><div class="grid2" style="gap:10px">
+  <label class="f">Ngày<input type="date" id="s_date" data-sf="date" value="${esc(s.date)}"${ro()}></label>
+  <label class="f">Tiền sân<input id="s_court" data-sf="courtFee" type="number" step="1000" inputmode="numeric" value="${num(s.courtFee)}"${ro()}></label>
+  <label class="f">Số quả cầu<input id="s_sh" data-sf="shuttles" type="number" inputmode="numeric" value="${num(s.shuttles)}"${ro()}></label>
+  <label class="f">Giá 1 quả<input id="s_sp" data-sf="shuttlePrice" type="number" step="1000" inputmode="numeric" value="${num(s.shuttlePrice)}"${ro()}></label>
+  <label class="f">Tiền nước<input id="s_dr" data-sf="drink" type="number" step="1000" inputmode="numeric" value="${num(s.drink)}"${ro()}></label>
+  <label class="f">Chi khác (gửi xe…)<input id="s_ot" data-sf="other" type="number" step="1000" inputmode="numeric" value="${num(s.other)}"${ro()}></label>
+  </div></div>
+  <div class="card"><h3>Thưởng phạt buổi này</h3>
+  <div class="row" style="gap:16px;margin-bottom:10px"><div class="f"><span>Số người thắng</span>${stepper("topN",r.topN)}</div><div class="f"><span>Số người thua</span>${stepper("bottomM",r.bottomM)}</div></div>
+  <div class="f" style="margin-bottom:10px"><span>Người thắng được miễn</span><div class="row">${ITEMS.map(([key,n])=>`<label class="row small" style="gap:6px;margin-right:8px"><input type="checkbox" data-act="exempt" data-k="${key}" ${r.exempt[key]?"checked":""}${ro()}> ${n}</label>`).join("")}</div></div>
+  <div class="stats"><div class="stat"><div class="k">Tổng chi</div><div class="v num">${money(k.total)}</div></div><div class="stat"><div class="k">Bình thường</div><div class="v num">${money(ceil1k(k.base))}</div></div></div>
+  ${!k.sd.played?`<p class="small muted">Chưa có trận nào ngày ${fmtDate(s.date)} nên mọi người trả bằng nhau.</p>`:!k.losers.length?`<p class="small muted">Chưa có người thua nào để chịu tiền, nên chưa ai được miễn.</p>`:`<p class="small muted">Mỗi người thắng được bớt ${money(k.exemptEach)}. Mỗi người thua trả thêm ${money(k.extra)}.</p>`}
+  ${k.sd.tie?`<div class="note">Có người bằng điểm ở ranh giới thắng/thua. Xem lại ở mục Bảng điểm.</div>`:""}
+  </div></div>
+  ${rBank()}
+  <div class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0">Mỗi người cần trả</h3><div class="row"><button class="btn court sm" data-act="copy">Sao chép gửi nhóm</button>${confirmBtn("delsess",s.id,"Xoá buổi")}</div></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Đến</th><th>Tên</th><th class="r">Điểm</th><th></th><th class="r">Cần trả</th><th>Đã trả</th><th></th></tr></thead><tbody>
+  ${ps.slice().sort((x,y)=>{const ix=k.sd.rows.findIndex(r=>r.id===x.id),iy=k.sd.rows.findIndex(r=>r.id===y.id);return (ix<0?999:ix)-(iy<0?999:iy)}).map(p=>{const inS=(s.att||[]).includes(p.id);const row=k.sd.rows.find(x=>x.id===p.id);const role=inS&&k.sd.played&&k.losers.length?(k.winners.includes(p.id)?"win":k.losers.includes(p.id)?"lose":""):"";const paid=!!(s.paid||{})[p.id];
+    return `<tr class="${role}" style="${inS?"":"opacity:.55"}"><td><input type="checkbox" data-act="att" data-id="${p.id}" ${inS?"checked":""} aria-label="${esc(p.name)} có đến"${ro()}></td><td>${esc(p.name)}</td><td class="r num">${inS&&row?row.pts:"—"}</td><td>${role==="win"?'<span class="pill good">Được miễn</span>':role==="lose"?'<span class="pill bad">Chịu tiền</span>':""}</td><td class="r num" style="font-weight:700">${inS?money(k.pay[p.id]):"—"}</td><td>${inS?`<input type="checkbox" data-act="spaid" data-id="${p.id}" ${paid?"checked":""} aria-label="${esc(p.name)} đã trả"${ro()}>`:""}</td><td>${inS?`<button class="btn sm" data-act="receipt" data-id="${p.id}">Phiếu thu</button>`:""}</td></tr>`}).join("")}
+  </tbody></table></div>
+  <p class="small muted">${k.n} người · thu được ${money(k.collected)}${k.collected>k.total?`, dư ${money(k.collected-k.total)} do làm tròn`:""}.</p></div>
+  <div id="copybox" hidden class="card"><h3>Nội dung gửi nhóm</h3><textarea id="copytext" readonly></textarea></div>
+  </section>`;
+  return html;
+}
+function summaryText(s){
+  const k=sessionCalc(s);
+  let t=`🏸 Cầu lông buổi ${fmtDate(s.date)}\nSân ${money(k.items.court)} · Cầu ${num(s.shuttles)} quả ${money(k.items.shuttle)}`;
+  if(k.items.drink)t+=` · Nước ${money(k.items.drink)}`;
+  if(k.items.other)t+=` · Khác ${money(k.items.other)}`;
+  t+=`\nTổng ${money(k.total)} · ${k.n} người\n`;
+  if(k.sd.played&&k.losers.length){t+=`\n🏆 Được miễn: ${k.winners.map(pname).join(", ")}\n😅 Chịu tiền: ${k.losers.map(pname).join(", ")}\n`}
+  t+=`\n`;
+  const order=k.sd.rows.map(x=>x.id);
+  order.forEach(id=>{const row=k.sd.rows.find(x=>x.id===id);t+=`${row.rank}. ${pname(id)} (${row.pts} điểm): ${money(k.pay[id])}${(s.paid||{})[id]?" ✅":""}\n`});
+  const bk=cfg().bank;if(bk&&bk.acct)t+=`\n💳 Chuyển khoản: ${bankName(bk.bin)} ${bk.acct}${bk.holder?" "+bk.holder:""}\n`;
+  return t;
+}
+
+/* ---------- bank + receipts (VietQR) ---------- */
+const BANKS=[["970418","BIDV"],["970436","Vietcombank"],["970415","VietinBank"],["970405","Agribank"],["970407","Techcombank"],["970422","MB Bank"],["970416","ACB"],["970432","VPBank"],["970423","TPBank"],["970403","Sacombank"],["970437","HDBank"],["970441","VIB"],["970443","SHB"],["970431","Eximbank"],["970426","MSB"],["970448","OCB"],["970440","SeABank"],["970449","LPBank"],["970428","Nam A Bank"],["970409","Bac A Bank"],["970425","ABBank"],["970454","BVBank"],["970452","KienlongBank"]];
+const bankName=bin=>{const b=BANKS.find(x=>x[0]===bin);return b?b[1]:"Ngân hàng "+bin};
+const ascii=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d").replace(/Đ/g,"D");
+function crc16(str){let c=0xFFFF;for(let i=0;i<str.length;i++){c^=str.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=(c&0x8000)?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF}return c.toString(16).toUpperCase().padStart(4,"0")}
+const tlv=(id,v)=>id+String(v.length).padStart(2,"0")+v;
+function vietqr(bin,acct,amount,content){
+  const mai=tlv("00","A000000727")+tlv("01",tlv("00",bin)+tlv("01",acct))+tlv("02","QRIBFTTA");
+  let q=tlv("00","01")+tlv("01",amount?"12":"11")+tlv("38",mai)+tlv("53","704");
+  if(amount)q+=tlv("54",String(Math.round(amount)));
+  q+=tlv("58","VN");
+  if(content)q+=tlv("62",tlv("08",content));
+  q+="6304";return q+crc16(q);
+}
+window.__vietqr=vietqr;
+function transferNote(s,pid){const [y,m,d]=(s.date||"").split("-");const nm=ascii(pname(pid)).replace(/\(.*?\)/g,"").replace(/[^A-Za-z0-9 ]/g,"").trim().toUpperCase();return ("CAU LONG "+d+m+" "+nm).slice(0,25).trim()}
+function rBank(){
+  const bk=cfg().bank;const editing=ui.bankEdit||!bk||!bk.acct;
+  if(!editing)return `<div class="card row" style="justify-content:space-between"><div><h3 style="margin:0 0 2px">Tài khoản nhận tiền</h3><div class="small"><b>${esc(bankName(bk.bin))}</b> · <span class="num">${esc(bk.acct)}</span>${bk.holder?" · "+esc(bk.holder):""}</div></div><button class="btn sm" data-act="bankedit"${ro()}>Sửa</button></div>`;
+  const known=!bk||BANKS.some(b=>b[0]===bk.bin);const bin=bk?bk.bin:"970418";
+  return `<form class="card" id="bankform"><h3>Tài khoản nhận tiền</h3><p class="small muted" style="margin:0 0 8px">Dùng để tạo mã QR chuyển khoản trên phiếu thu, số tiền điền sẵn cho từng người.</p><div class="grid2" style="gap:10px">
+  <label class="f">Ngân hàng<select id="bk_bin">${BANKS.map(b=>`<option value="${b[0]}" ${b[0]===bin?"selected":""}>${b[1]}</option>`).join("")}<option value="custom" ${known?"":"selected"}>Ngân hàng khác (nhập mã BIN)</option></select></label>
+  <label class="f" ${known?"hidden":""} id="bk_custom_wrap">Mã BIN ngân hàng (6 số)<input id="bk_custom" inputmode="numeric" value="${known?"":esc(bin)}"></label>
+  <label class="f">Số tài khoản<input id="bk_acct" inputmode="numeric" autocomplete="off" value="${esc(bk?bk.acct:"")}"></label>
+  <label class="f">Tên chủ tài khoản<input id="bk_holder" autocomplete="off" value="${esc(bk?bk.holder:"")}" placeholder="NGUYEN VAN A"></label>
+  </div><div class="row" style="margin-top:10px"><button class="btn primary" type="submit"${ro()}>Lưu tài khoản</button>${bk&&bk.acct?`<button class="btn ghost" type="button" data-act="bankcancel">Thôi</button>`:""}</div></form>`;
+}
+function receiptData(sid,pid){
+  const s=S.sessions[sid];if(!s)return null;const k=sessionCalc(Object.assign({id:sid},s));
+  if(!k.pay.hasOwnProperty(pid))return null;
+  const row=k.sd.rows.find(x=>x.id===pid);const role=k.sd.played&&k.losers.length?(k.winners.includes(pid)?"win":k.losers.includes(pid)?"lose":""):"";
+  const exemptNames=ITEMS.filter(([key])=>k.sd.rules.exempt[key]).map(([,n])=>n.replace("Tiền ","").toLowerCase()).join(", ");
+  const bk=cfg().bank;const note=transferNote(s,pid);const pay=k.pay[pid];
+  const lines=[[`Chia đều (${k.n} người)`,k.base]];
+  if(role==="win")lines.push([`Được miễn ${exemptNames}`,-k.exemptEach]);
+  if(role==="lose")lines.push([`Chịu phần miễn của ${k.winners.length} người thắng`,k.extra]);
+  const sub=lines.reduce((a,l)=>a+l[1],0);if(Math.round(pay-sub)!==0)lines.push(["Làm tròn",pay-sub]);
+  return {s,k,pid,name:pname(pid),row,role,lines,pay,note,bank:bk&&bk.acct?bk:null,paid:!!(s.paid||{})[pid],
+    qr:bk&&bk.acct?vietqr(bk.bin,bk.acct,pay,note):null};
+}
+function rReceipt(){
+  const r=receiptData(ui.sessionId,ui.receipt);if(!r){ui.receipt=null;return""}
+  const ids=r.k.sd.rows.map(x=>x.id).filter(id=>r.k.pay.hasOwnProperty(id));const at=ids.indexOf(r.pid);
+  return `<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Phiếu thu ${esc(r.name)}"><div class="box">
+  <div class="row" style="justify-content:space-between"><h3 style="margin:0">Phiếu thu · ${esc(r.name)}</h3><button class="btn sm" data-act="closereceipt">Đóng</button></div>
+  <img id="rcimg" alt="Phiếu thu của ${esc(r.name)}, buổi ${fmtDate(r.s.date)}, cần trả ${money(r.pay)}${r.bank?", kèm mã QR chuyển khoản":""}">
+  ${r.bank?`<div class="kv"><span class="muted small">Số tài khoản</span><b>${esc(bankName(r.bank.bin))} ${esc(r.bank.acct)}</b><button class="btn sm ghost" data-act="copyval" data-v="${esc(r.bank.acct)}">Chép</button>
+  <span class="muted small">Số tiền</span><b>${money(r.pay)}</b><button class="btn sm ghost" data-act="copyval" data-v="${r.pay}">Chép</button>
+  <span class="muted small">Nội dung</span><b>${esc(r.note)}</b><button class="btn sm ghost" data-act="copyval" data-v="${esc(r.note)}">Chép</button></div>`:`<div class="note">Chưa có tài khoản nhận tiền nên phiếu chưa có mã QR. Nhập tài khoản ở mục Chia tiền.</div>`}
+  <div class="row"><button class="btn primary" data-act="savereceipt" id="savebtn" ${ui.canDownload===false?"hidden":""}>Tải ảnh phiếu thu</button><span class="small muted">Hoặc bấm giữ vào ảnh để lưu hay gửi Zalo.</span></div>
+  <div class="row" style="justify-content:space-between"><button class="btn sm" data-act="receipt" data-id="${ids[at-1]||""}" ${at>0?"":"disabled"}>← Người trước</button><span class="small muted num">${at+1}/${ids.length}</span><button class="btn sm" data-act="receipt" data-id="${ids[at+1]||""}" ${at<ids.length-1?"":"disabled"}>Người sau →</button></div>
+  </div></div>`;
+}
+let rcCache={key:"",url:"",blob:null};
+async function drawReceipt(){
+  const r=receiptData(ui.sessionId,ui.receipt);const img=$("#rcimg");if(!r||!img)return;
+  const key=JSON.stringify([r.name,r.s.date,r.lines,r.pay,r.qr,r.paid,r.role,r.row&&r.row.pts,r.bank]);
+  if(rcCache.key===key&&rcCache.url){img.src=rcCache.url;return}
+  try{await document.fonts.ready}catch(e){}
+  const W=720,PAD=48;const c=document.createElement("canvas");const H=r.qr?1320:900;c.width=W;c.height=H;const x=c.getContext("2d");
+  const F=(w,sz,fam)=>`${w} ${sz}px ${fam==="d"?'"Barlow Condensed","Arial Narrow",sans-serif':'"Be Vietnam Pro",system-ui,sans-serif'}`;
+  x.fillStyle="#ffffff";x.fillRect(0,0,W,H);
+  x.fillStyle="#1d6b52";x.fillRect(0,0,W,160);
+  x.fillStyle="#ffffff";x.font=F(700,64,"d");x.fillText("PHIẾU THU",PAD,88);
+  x.font=F(500,26);x.fillText("Cầu lông · buổi "+fmtDate(r.s.date),PAD,132);
+  x.textAlign="right";x.font=F(700,26,"d");x.globalAlpha=.9;x.fillText("NGUYỄN MINH DUY",W-PAD,56);x.globalAlpha=1;x.textAlign="left";
+  let y=220;x.fillStyle="#5b6d64";x.font=F(600,20);x.fillText("NGƯỜI NỘP",PAD,y);
+  y+=44;x.fillStyle="#14231c";x.font=F(700,38);x.fillText(r.name,PAD,y);
+  y+=38;x.font=F(500,22);x.fillStyle="#5b6d64";
+  x.fillText((r.row?`Hạng ${r.row.rank} · ${r.row.pts} điểm`:"")+(r.role==="win"?" · Được miễn":r.role==="lose"?" · Chịu tiền":""),PAD,y);
+  y+=36;x.strokeStyle="#cfdcd4";x.lineWidth=2;x.beginPath();x.moveTo(PAD,y);x.lineTo(W-PAD,y);x.stroke();
+  x.font=F(500,24);
+  r.lines.forEach(([label,v])=>{y+=46;x.fillStyle="#14231c";x.textAlign="left";x.fillText(label,PAD,y);x.textAlign="right";x.fillStyle=v<0?"#1f8a4c":"#14231c";x.fillText((v<0?"−":"")+money(Math.abs(v)),W-PAD,y)});
+  y+=30;x.beginPath();x.moveTo(PAD,y);x.lineTo(W-PAD,y);x.stroke();
+  y+=60;x.textAlign="left";x.fillStyle="#14231c";x.font=F(700,30);x.fillText("CẦN TRẢ",PAD,y);
+  x.textAlign="right";x.fillStyle="#e8622c";x.font=F(700,56,"d");x.fillText(money(r.pay),W-PAD,y+4);x.textAlign="left";
+  if(r.qr&&window.qrcode){
+    const q=window.qrcode(0,"M");q.addData(r.qr);q.make();const n=q.getModuleCount();const size=380,cell=Math.floor(size/(n+8)),qs=cell*(n+8);
+    const qx=(W-qs)/2,qy=y+50;x.fillStyle="#ffffff";x.fillRect(qx,qy,qs,qs);x.strokeStyle="#cfdcd4";x.strokeRect(qx,qy,qs,qs);
+    x.fillStyle="#000000";for(let rr=0;rr<n;rr++)for(let cc=0;cc<n;cc++)if(q.isDark(rr,cc))x.fillRect(qx+(cc+4)*cell,qy+(rr+4)*cell,cell,cell);
+    y=qy+qs+48;x.textAlign="center";x.fillStyle="#14231c";x.font=F(700,26);x.fillText(ascii(r.bank.holder||"").toUpperCase()||bankName(r.bank.bin),W/2,y);
+    y+=36;x.font=F(600,26);x.fillText(bankName(r.bank.bin)+" · "+r.bank.acct,W/2,y);
+    y+=34;x.font=F(500,22);x.fillStyle="#5b6d64";x.fillText("Nội dung: "+r.note,W/2,y);
+    y+=30;x.fillText("Quét bằng app ngân hàng, số tiền đã điền sẵn",W/2,y);x.textAlign="left";
+  }else if(r.qr){y+=60;x.fillStyle="#c43d32";x.font=F(500,22);x.fillText("Không tạo được mã QR, chuyển khoản theo số tài khoản.",PAD,y)}
+  if(r.paid){x.save();x.translate(W-170,250);x.rotate(-0.25);x.strokeStyle="#1f8a4c";x.lineWidth=5;x.strokeRect(-110,-40,220,70);x.fillStyle="#1f8a4c";x.font=F(700,34,"d");x.textAlign="center";x.fillText("ĐÃ THU",0,8);x.restore()}
+  y+=56;x.textAlign="center";x.fillStyle="#1d6b52";x.font=F(700,22,"d");x.fillText("HỘI QUÁN LÔNG THỦ · BY NGUYỄN MINH DUY",W/2,y);x.textAlign="left";
+  const out=document.createElement("canvas");out.width=W;out.height=Math.min(H,Math.ceil(y+PAD));out.getContext("2d").drawImage(c,0,0);
+  const url=out.toDataURL("image/png");
+  out.toBlob(b=>{if(rcCache.key===key)rcCache.blob=b},"image/png");
+  rcCache={key,url,blob:null};const im=$("#rcimg");if(im)im.src=url;
+}
+let dlP=null;
+function dataUrlToBlob(u){const [h,b]=u.split(",");const bin=atob(b);const arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:(h.match(/:(.*?);/)||[])[1]||"image/png"})}
+function rNguoi(){
+  const ps=players();
+  return `<section class="panel"><div><h2>Thành viên</h2><p class="lead">Trình độ từ T1 (mới chơi) đến T5 (rất mạnh) và giới tính dùng để cân đội khi bốc ngẫu nhiên. Nên chấm trình độ nữ so với các bạn nữ khác.</p></div>
+  <form class="card row" id="addp"><label class="f" style="flex:2 1 180px">Tên<input id="pn" placeholder="Ví dụ: Anh Tuấn" autocomplete="off"></label>
+  <label class="f" style="flex:1 1 110px">Trình độ<select id="pl"><option value="1">T1 · Mới chơi</option><option value="2">T2 · Yếu</option><option value="3" selected>T3 · Trung bình</option><option value="4">T4 · Khá</option><option value="5">T5 · Mạnh</option></select></label>
+  <label class="f" style="flex:0 1 90px">Giới tính<select id="pg"><option value="nam">Nam</option><option value="nu">Nữ</option></select></label>
+  <button class="btn primary" type="submit" style="align-self:end"${ro()}>Thêm</button></form>
+  ${ps.length?`<div class="card"><div class="plist">${ps.map(p=>`<div class="prow"><input type="checkbox" data-act="here" data-id="${p.id}" ${p.here?"checked":""} aria-label="Có mặt: ${esc(p.name)}"${ro()}>
+  <div class="name">${esc(p.name)}</div>
+  <select data-act="gender" data-id="${p.id}" aria-label="Giới tính ${esc(p.name)}"${ro()}><option value="nam" ${p.g!=="nu"?"selected":""}>Nam</option><option value="nu" ${p.g==="nu"?"selected":""}>Nữ</option></select>
+  <select data-act="level" data-id="${p.id}" aria-label="Trình độ ${esc(p.name)}"${ro()}>${[1,2,3,4,5].map(l=>`<option value="${l}" ${+p.level===l?"selected":""}>T${l}</option>`).join("")}</select>
+  ${confirmBtn("delp",p.id,"Xoá")}</div>`).join("")}</div></div>`:emptyPlayers()}
+  ${mode==="local"?`<div class="card"><h3>Sao lưu dữ liệu</h3><p class="small muted" style="margin:0 0 10px">Dữ liệu đang lưu trên trình duyệt của máy này. Thỉnh thoảng nên tải bản sao lưu về, để khi đổi máy hay xoá lịch sử trình duyệt vẫn khôi phục được.</p>
+  <div class="row"><button class="btn court" data-act="backup">Tải bản sao lưu</button><label class="btn" for="restorefile" style="display:inline-block">Khôi phục từ file</label><input type="file" id="restorefile" accept=".json,application/json" hidden></div></div>`:""}
+  </section>`;
+}
+
+function rBxh(){
+  const ps=players();const st={};ps.forEach(p=>st[p.id]={w:0,l:0,top:0,bot:0});
+  matchesList().forEach(m=>{const aw=+m.sa>+m.sb;m.a.forEach(id=>{if(st[id])aw?st[id].w++:st[id].l++});m.b.forEach(id=>{if(st[id])aw?st[id].l++:st[id].w++})});
+  sessionsList().forEach(s=>{const k=sessionCalc(s);if(!k.sd.played||!k.losers.length)return;k.winners.forEach(id=>{if(st[id])st[id].top++});k.losers.forEach(id=>{if(st[id])st[id].bot++})});
+  const rows=ps.map(p=>Object.assign({p},st[p.id])).map(r=>Object.assign(r,{g:r.w+r.l,rate:r.w+r.l?r.w/(r.w+r.l):0})).sort((a,b)=>b.top-a.top||b.rate-a.rate||b.w-a.w);
+  const M=matchesList();
+  return `<section class="panel"><div><h2>Lịch sử</h2><p class="lead">Tổng hợp mọi buổi: số lần được miễn tiền, số lần chịu tiền, và tỉ lệ thắng.</p></div>
+  ${ps.length?`<div class="card"><div class="tbl-wrap"><table><thead><tr><th>Tên</th><th class="r">Lần được miễn</th><th class="r">Lần chịu tiền</th><th class="r">Trận</th><th class="r">Tỉ lệ thắng</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr><td>${esc(r.p.name)} <span class="lv">T${+r.p.level||3}</span></td><td class="r num">${r.top}</td><td class="r num">${r.bot}</td><td class="r num">${r.g}</td><td class="r num">${r.g?Math.round(r.rate*100)+"%":"—"}</td></tr>`).join("")}
+  </tbody></table></div></div>`:emptyPlayers()}
+  <div class="card"><h3>Tất cả các trận <span class="pill num">${M.length}</span></h3>${M.length?M.slice(0,80).map(matchLine).join(""):`<p class="muted small" style="margin:0">Chưa có trận nào.</p>`}</div></section>`;
+}
+
+/* ---------- actions ---------- */
+function setRule(key,val){
+  const date=ui.tab==="tien"&&ui.sessionId?S.sessions[ui.sessionId].date:(ui.day||today());
+  const s=ui.tab==="tien"&&ui.sessionId?Object.assign({id:ui.sessionId},S.sessions[ui.sessionId]):sessionOn(date);
+  putCfg({[key]:val});
+  if(s)upd("sessions",s.id,{[key]:val});
+}
+function newSession(date){const c=cfg();const ex=sessionOn(date);if(ex){ui.sessionId=ex.id;ui.tab="tien";render();return}
+  const played=[...new Set(matchesOn(date).flatMap(m=>m.a.concat(m.b)))];
+  const att=[...new Set(played.concat(date===today()?players().filter(p=>p.here).map(p=>p.id):[]))];
+  const sid=uid();ui.sessionId=sid;ui.tab="tien";
+  put("sessions",sid,{date,courtFee:+c.courtFee,shuttles:0,shuttlePrice:+c.shuttlePrice,drink:0,other:0,att,paid:{},topN:c.topN,bottomM:c.bottomM,exempt:c.exempt,at:Date.now()})}
+document.addEventListener("click",e=>{
+  if(e.target.id==="sheet"){ui.receipt=null;render();return}
+  const t=e.target.closest("[data-act]");if(!t||t.closest("#tabs"))return;
+  if(t.tagName==="INPUT"||t.tagName==="SELECT")return;
+  const a=t.dataset.act,id=t.dataset.id;
+  switch(a){
+    case "goto":ui.tab=t.dataset.tab;if(ui.tab==="diem")ui.day=today();render();window.scrollTo(0,0);break;
+    case "gotosess":ui.sessionId=id;ui.tab="tien";render();window.scrollTo(0,0);break;
+    case "sample":[["Tuấn",5,"nam"],["Hùng",4,"nam"],["Lan",3,"nu"],["Minh",4,"nam"],["Hà",2,"nu"],["Phong",3,"nam"],["Ngọc",4,"nu"],["Duy",3,"nam"],["Trang",3,"nu"],["Khoa",2,"nam"]].forEach(([n,l,g])=>put("players",uid(),{name:n+" (mẫu)",level:l,g,here:true}));toast("Đã thêm 10 người mẫu");break;
+    case "here":if(!canWrite)return;upd("players",id,{here:!S.players[id].here});break;
+    case "allhere":players().forEach(p=>{if(!p.here)upd("players",p.id,{here:true})});break;
+    case "nohere":players().forEach(p=>{if(p.here)upd("players",p.id,{here:false})});break;
+    case "fmt":ui.fmt=t.dataset.v;ui.draft=null;render();break;
+    case "pmode":ui.pmode=t.dataset.v;render();break;
+    case "pair":pairAll();render();break;
+    case "pickone":pairOne(+t.dataset.i);render();break;
+    case "rmcourt":ui.draft.courts.splice(+t.dataset.i,1);render();break;
+    case "dropmatch":ui.draft.courts[+t.dataset.i]={free:true};render();break;
+    case "savematch":{const m=ui.draft.courts[+t.dataset.i];const sa=num(m.sa),sb=num(m.sb);
+      if(sa===sb){toast("Nhập tỉ số có bên thắng trước khi lưu");return}
+      put("matches",uid(),{date:today(),a:m.a,b:m.b,sa,sb,startAt:m.startAt||null,at:Date.now()});
+      const s=sessionOn(today());if(s){const att=[...new Set((s.att||[]).concat(m.a,m.b))];if(att.length!==(s.att||[]).length)upd("sessions",s.id,{att})}
+      ui.draft.courts[+t.dataset.i]={free:true};render();toast("Đã lưu, bảng điểm đã cập nhật");break}
+    case "step":{const k=t.dataset.k;const r=ui.tab==="tien"&&ui.sessionId?rulesFor(S.sessions[ui.sessionId].date):rulesFor(ui.day||today());setRule(k,Math.max(0,Math.min(20,r[k]+ +t.dataset.d)));break}
+    case "newsess":newSession(t.dataset.date||today());break;
+    case "receipt":if(!id)return;ui.receipt=id;render();break;
+    case "backup":{const data=JSON.stringify({app:"hoi-quan-long-thu",version:1,exportedAt:new Date().toISOString(),players:S.players,matches:S.matches,sessions:S.sessions,cfg:S.cfg},null,1);
+      if(plainDownload("hoi-quan-long-thu-"+today()+".json",data,"application/json"))toast("Đã tải bản sao lưu");else toast("Không tải được bản sao lưu");break}
+    case "closereceipt":ui.receipt=null;render();break;
+    case "bankedit":ui.bankEdit=true;render();break;
+    case "bankcancel":ui.bankEdit=false;render();break;
+    case "copyval":{const v=t.dataset.v;try{navigator.clipboard.writeText(v).then(()=>toast("Đã chép "+v),()=>toast(v))}catch(err){toast(v)}break}
+    case "savereceipt":{const r=receiptData(ui.sessionId,ui.receipt);if(!r)return;const blob=rcCache.blob;
+      const fname="phieu-thu-"+ascii(r.name).replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"").toLowerCase()+"-"+r.s.date+".png";
+      if(!IN_CLAUDE){if(plainDownload(fname,blob||dataUrlToBlob(rcCache.url)))toast("Đã tải phiếu thu");else toast("Bấm giữ vào ảnh để lưu");return}
+      (async()=>{const dl=dlP?await dlP:null;if(!dl){ui.canDownload=false;render();toast("Bấm giữ vào ảnh để lưu");return}
+        try{await dl.save({filename:fname,data:blob||rcCache.url});toast("Đã lưu phiếu thu")}catch(err){if(err&&err.code==="declined")return;if(err&&(err.code==="unavailable"||err.code==="host_unavailable"||err.code==="not_granted")){ui.canDownload=false;render()}toast("Không tải được, bấm giữ vào ảnh để lưu")}})();break}
+    case "ask":ui.confirm=t.dataset.c;render();break;
+    case "cancelc":ui.confirm=null;render();break;
+    case "delmatch":ui.confirm=null;del("matches",id);break;
+    case "delp":ui.confirm=null;del("players",id);break;
+    case "delsess":ui.confirm=null;del("sessions",id);ui.sessionId=null;break;
+    case "copy":{const s=S.sessions[ui.sessionId];if(!s)return;const txt=summaryText(s);const box=$("#copybox"),ta=$("#copytext");ta.value=txt;box.hidden=false;
+      const fallback=()=>{ta.focus();ta.select();toast("Đã chọn sẵn nội dung, bấm giữ để sao chép")};
+      try{navigator.clipboard.writeText(txt).then(()=>toast("Đã sao chép, dán vào Zalo/Messenger"),fallback)}catch(err){fallback()}break}
+  }
+});
+document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;ui.tab=b.dataset.tab;ui.confirm=null;try{localStorage.setItem(LS+".tab",ui.tab)}catch(err){}render();window.scrollTo(0,0)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&ui.receipt){ui.receipt=null;render();return}if((e.key==="Enter"||e.key===" ")&&e.target.matches(".chip[role=button]")){e.preventDefault();e.target.click()}});
+document.addEventListener("input",e=>{const t=e.target;if(t.dataset.s&&ui.draft)ui.draft.courts[+t.dataset.i][t.dataset.s]=t.value});
+document.addEventListener("change",e=>{const t=e.target,a=t.dataset.act,id=t.dataset.id;
+  if(t.id==="courts"){putCfg({courts:Math.max(1,Math.min(10,num(t.value)||1))});return}
+  if(t.id==="priority"){putCfg({priority:t.value});return}
+  if(t.id==="genderBalance"){putCfg({genderBalance:t.checked});ui.draft=null;return}
+  if(a==="gender"){upd("players",id,{g:t.value});return}
+  if(t.id==="winPts"||t.id==="losePts"){putCfg({[t.id]:Math.max(0,num(t.value))});return}
+  if(t.id==="day"){ui.day=t.value;render();return}
+  if(t.id==="restorefile"&&t.files&&t.files[0]){const fr=new FileReader();fr.onload=()=>{try{const o=JSON.parse(fr.result);if(o.app!=="hoi-quan-long-thu"||!o.players)throw 0;
+      COLS.forEach(c=>S[c]=o[c]||{});S.cfg=o.cfg||null;saveLocal();render();toast("Đã khôi phục "+Object.keys(S.players).length+" thành viên, "+Object.keys(S.matches).length+" trận")}catch(err){toast("File không đúng định dạng sao lưu")}};fr.readAsText(t.files[0]);return}
+  if(t.id==="bk_bin"){const w=$("#bk_custom_wrap");if(w)w.hidden=t.value!=="custom";return}
+  if(t.id==="pick"){ui.sessionId=t.value;render();return}
+  if(t.dataset.sf&&ui.sessionId){const f=t.dataset.sf;const v=f==="date"?t.value:Math.max(0,num(t.value));if(f==="courtFee"||f==="shuttlePrice")putCfg({[f]:v});upd("sessions",ui.sessionId,{[f]:v});return}
+  if(a==="exempt"){const r=rulesFor(S.sessions[ui.sessionId].date);setRule("exempt",Object.assign({},r.exempt,{[t.dataset.k]:t.checked}));return}
+  if(a==="here"){upd("players",id,{here:t.checked});return}
+  if(a==="level"){upd("players",id,{level:+t.value});return}
+  if(a==="att"){const s=S.sessions[ui.sessionId];const att=t.checked?(s.att||[]).concat(id):(s.att||[]).filter(x=>x!==id);upd("sessions",ui.sessionId,{att});return}
+  if(a==="spaid"){const s=S.sessions[ui.sessionId];upd("sessions",ui.sessionId,{paid:Object.assign({},s.paid||{},{[id]:t.checked})});return}
+});
+document.addEventListener("submit",e=>{e.preventDefault();const f=e.target;
+  if(f.id==="bankform"){let bin=$("#bk_bin").value;if(bin==="custom")bin=$("#bk_custom").value.replace(/\D/g,"");const acct=$("#bk_acct").value.replace(/[^0-9A-Za-z]/g,"");const holder=ascii($("#bk_holder").value).toUpperCase().trim().slice(0,40);
+    if(!/^\d{6}$/.test(bin)){toast("Mã BIN ngân hàng gồm 6 số");return}if(acct.length<4){toast("Nhập số tài khoản");return}
+    ui.bankEdit=false;putCfg({bank:{bin,acct,holder}});toast("Đã lưu tài khoản nhận tiền");return}
+  if(f.id==="addp"){const n=$("#pn").value.trim();if(!n){toast("Nhập tên người chơi");return}put("players",uid(),{name:n.slice(0,40),level:+$("#pl").value,g:$("#pg").value,here:true});toast("Đã thêm "+n);setTimeout(()=>{const el=$("#pn");if(el)el.focus()},0)}
+});
+
+render();
+initStore();
+try{dlP=window.claude&&window.claude.use?window.claude.use("downloads"):null}catch(e){dlP=null}
+})();
+</script>
+
+</body>
+</html>
